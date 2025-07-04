@@ -113,7 +113,6 @@ window.toggleQuickSettings = function (btn, type) {
                     ${localSongs.map((song, i) => `<li><button class="w-full text-left px-2 py-1 rounded hover:bg-[#b71c3c22] transition truncate" style="font-size:13px;background:transparent;color:#fff;outline:none;border:none;cursor:pointer;${i === 0 ? 'font-weight:600;' : ''}" data-src="${song.file}" data-idx="${i}">${song.title}</button></li>`).join('')}
                 </ul>
             </div>
-            <div style="font-size:0.8rem;color:#f8bbd0;text-align:center;margin-top:0.2rem;">Sab gaane local assets/music se baj rahe hain.<br>Controls: Play/Pause, Next, Previous, Seek, Volume, Playlist.</div>
         </div>
         `;
     } else if (type === "all") {
