@@ -1,0 +1,793 @@
+#window_terminal {
+  background-color: #1f2937aa;
+  background-clip: padding-box;
+  backdrop-filter: blur(18px) saturate(100%) contrast(100%);
+  opacity: 20%;
+}
+#window_vscode {
+  background-color: #1f2937c6;
+  background-clip: padding-box;
+  backdrop-filter: blur(18px) saturate(100%) contrast(100%);
+  opacity: 20%;
+}
+
+#desktop_thispc_icon,
+#desktop_recyclebin_icon,
+#desktop_chrome_icon,
+#desktop_notes_icon,
+#desktop_vscode_icon,
+#desktop_terminal_icon,
+#desktop_apexos_icon,
+#desktop_games_icon {
+  width: 6vw;
+  min-width: 28px;
+  max-width: 6vw;
+}
+
+/* Custom scrollbar for a cleaner look */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #2d3748;
+  /* bg-gray-800 */
+}
+
+::-webkit-scrollbar-thumb {
+  background: #4a5568;
+  /* bg-gray-700 */
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #a0aec0;
+  /* bg-gray-500 */
+}
+
+/* Custom Cursor for the whole body */
+body {
+  cursor: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="white" stroke="black" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3l7.07 16.97 2.51-7.39 7.39-2.51L3 3z"></path><path d="M10.18 10.18l3.64 3.64"></path></svg>')
+      0 0,
+    auto;
+  /* White arrow with black border */
+}
+
+/* Basic styling for draggable windows */
+.window {
+  position: absolute;
+  background-color: rgba(45, 53, 72, 0.7);
+  /* bg-gray-800 with transparency */
+  border-radius: 0.8rem;
+  /* Slightly more rounded */
+  box-shadow: 0 12px 25px rgba(0, 0, 0, 0.4),
+    0 0 0 1px rgba(255, 255, 255, 0.08);
+  /* Stronger shadow, subtle border */
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  resize: both;
+  /* Allow resizing */
+  min-width: 300px;
+  /* Increased min-width */
+  min-height: 200px;
+  /* Increased min-height */
+  backdrop-filter: blur(20px) saturate(180%);
+  /* Glassmorphism effect */
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  /* For Safari */
+  transition: box-shadow 0.3s ease;
+  /* Smooth shadow transition */
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  /* Very subtle border */
+}
+
+.window.active-focused {
+  box-shadow: 0 15px 30px rgba(0, 0, 0, 0.6), 0 0 0 2px rgba(99, 179, 237, 0.6);
+  /* Blue glow on active */
+}
+
+.window-header {
+  cursor: grab;
+  /* Default cursor for header when not dragging */
+  background-color: rgba(26, 32, 44, 0.8);
+  /* bg-gray-900 with transparency */
+  padding: 0.6rem 0.9rem;
+  /* Slightly more padding */
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid rgba(74, 85, 104, 0.5);
+  /* Semi-transparent border */
+  user-select: none;
+  /* Prevent text selection during drag */
+  font-size: 0.9rem;
+  /* Slightly smaller title */
+  color: #e2e8f0;
+  /* Light gray text */
+}
+
+/* Ensure window-header cursor changes to grabbing when dragging is active (JS handles this) */
+.window-header.dragging {
+  cursor: grabbing;
+}
+
+.window-body {
+  flex-grow: 1;
+  padding: 0;
+  overflow: auto;
+  background-color: transparent;
+  /* Make body background transparent to see glass effect */
+  color: white;
+  display: flex;
+  /* Make body a flex container for content */
+  flex-direction: column;
+}
+
+.window-controls button {
+  background: none;
+  border: none;
+  color: #a0aec0;
+  /* Slightly muted white for controls */
+  font-size: 1rem;
+  /* Slightly smaller */
+  margin-left: 0.6rem;
+  /* More space */
+  cursor: pointer;
+  /* Control buttons should always have pointer cursor */
+  width: 30px;
+  /* Consistent size */
+  height: 30px;
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 50%;
+  /* Make them round */
+  transition: background-color 0.2s, color 0.2s;
+}
+
+.window-controls .minimize-btn:hover {
+  background-color: rgba(74, 85, 104, 0.6);
+  color: white;
+}
+
+.window-controls .maximize-btn:hover {
+  background-color: rgba(74, 85, 104, 0.6);
+  color: white;
+}
+
+.window-controls .close-btn:hover {
+  background-color: #e53e3e;
+  /* bg-red-600 */
+  color: white;
+}
+
+.window-controls .close-btn {
+  color: #f87171;
+  /* text-red-400 */
+}
+
+/* Taskbar specific glassmorphism */
+#taskbar {
+  background: rgba(0, 0, 0, 0.4);
+  /* Darker, more transparent */
+  backdrop-filter: blur(15px) saturate(180%);
+  -webkit-backdrop-filter: blur(15px) saturate(180%);
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 -5px 15px rgba(0, 0, 0, 0.3);
+}
+
+/* Taskbar app active state */
+.taskbar-app-btn.active {
+  background-color: rgba(255, 255, 255, 0.15);
+  /* Slightly less opaque */
+  border-bottom: 3px solid #63b3ed;
+  /* blue-300 */
+}
+
+/* Start Menu Glassmorphism */
+#startMenu {
+  background-color: rgba(45, 53, 72, 0.85);
+  /* Slightly less opaque than windows */
+  backdrop-filter: blur(25px) saturate(180%);
+  -webkit-backdrop-filter: blur(25px) saturate(180%);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+}
+
+#startMenu input[type="text"] {
+  background-color: rgba(74, 85, 104, 0.7);
+  /* More transparent input */
+  border: 1px solid rgba(99, 179, 237, 0.4);
+  /* Blue border on focus */
+}
+
+#startMenu button {
+  background-color: rgba(74, 85, 104, 0.6);
+  /* Transparent buttons */
+}
+
+#startMenu button:hover {
+  background-color: rgba(99, 179, 237, 0.8);
+  /* Stronger blue on hover */
+}
+
+/* File Explorer Specific Styles */
+.file-explorer {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.fe-toolbar {
+  padding: 0.75rem;
+  background-color: rgba(31, 41, 55, 0.8);
+  /* More transparent */
+  border-bottom: 1px solid rgba(74, 85, 104, 0.5);
+  /* bg-gray-700 */
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.fe-path-input {
+  flex-grow: 1;
+  background-color: rgba(55, 65, 81, 0.7);
+  /* Transparent input */
+  border: 1px solid rgba(75, 85, 99, 0.5);
+  padding: 0.35rem 0.75rem;
+  border-radius: 0.375rem;
+  color: white;
+  outline: none;
+  font-size: 0.9rem;
+}
+
+.fe-content {
+  display: flex;
+  flex-grow: 1;
+  background-color: transparent;
+  /* Ensure content area is transparent */
+}
+
+.fe-sidebar {
+  width: 180px;
+  background-color: rgba(31, 41, 55, 0.8);
+  /* More transparent */
+  padding: 0.75rem;
+  border-right: 1px solid rgba(74, 85, 104, 0.5);
+  overflow-y: auto;
+  flex-shrink: 0;
+}
+
+.fe-main {
+  flex-grow: 1;
+  padding: 1rem;
+  overflow-y: auto;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.5rem;
+  /* Space between icons */
+  align-content: flex-start;
+  /* Align items to the start of the cross axis */
+}
+
+.fe-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  width: 80px;
+  /* Default fixed width for icon/text */
+  cursor: pointer;
+  padding: 0.5rem;
+  border-radius: 0.375rem;
+  transition: background-color 0.2s;
+}
+
+.fe-item:hover {
+  background-color: rgba(255, 255, 255, 0.15);
+  /* More visible hover */
+}
+
+.fe-item i {
+  font-size: 2.5rem;
+  /* Default desktop icons */
+  margin-bottom: 0.5rem;
+}
+/* Taskbar icon size */
+.taskbar-app-btn i,
+#taskbar .taskbar-icon,
+#taskbar .fa,
+#taskbar .fas,
+#taskbar .fab {
+  font-size: 0.8rem !important;
+  /* Slightly smaller taskbar icons */
+}
+
+.fe-item p {
+  font-size: 0.8rem;
+  word-break: break-all;
+  /* Break long words */
+  white-space: normal;
+  /* Allow text wrapping */
+}
+
+.fe-sidebar-item {
+  display: flex;
+  align-items: center;
+  padding: 0.5rem;
+  border-radius: 0.375rem;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.fe-sidebar-item:hover {
+  background-color: rgba(255, 255, 255, 0.15);
+}
+
+.fe-sidebar-item.active {
+  background-color: rgba(255, 255, 255, 0.25);
+  /* More visible active */
+}
+
+/* Notes App Specific Styles */
+
+.notes-app {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 24px;
+  box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.18);
+  backdrop-filter: blur(16px) saturate(180%);
+  -webkit-backdrop-filter: blur(16px) saturate(180%);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+}
+
+.notes-list {
+  width: 100%;
+  background: rgba(255, 255, 255, 0.18);
+  border-radius: 18px;
+  box-shadow: 0 4px 24px 0 rgba(31, 38, 135, 0.1);
+  backdrop-filter: blur(12px) saturate(160%);
+  -webkit-backdrop-filter: blur(12px) saturate(160%);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  padding: 1rem;
+  overflow-y: auto;
+  flex-shrink: 0;
+}
+
+.notes-list-item {
+  padding: 1rem;
+  margin-bottom: 1rem;
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.22);
+  box-shadow: 0 2px 8px 0 rgba(31, 38, 135, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  cursor: pointer;
+  transition: background 0.2s, box-shadow 0.2s;
+  backdrop-filter: blur(8px) saturate(120%);
+  -webkit-backdrop-filter: blur(8px) saturate(120%);
+}
+
+.notes-list-item:hover {
+  background: rgba(255, 255, 255, 0.32);
+  box-shadow: 0 4px 16px 0 rgba(31, 38, 135, 0.12);
+}
+
+.notes-list-item.active {
+  background: rgba(255, 255, 255, 0.38);
+  box-shadow: 0 6px 20px 0 rgba(31, 38, 135, 0.16);
+}
+
+.notes-editor {
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  padding: 2rem 1.5rem;
+  background: rgba(255, 255, 255, 0.18);
+  border-radius: 20px;
+  box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.12);
+  backdrop-filter: blur(14px) saturate(170%);
+  -webkit-backdrop-filter: blur(14px) saturate(170%);
+  border: 1px solid rgba(255, 255, 255, 0.16);
+}
+
+.notes-editor textarea {
+  flex-grow: 1;
+  background: rgba(255, 255, 255, 0.22);
+  color: #222;
+  padding: 1.2rem;
+  border-radius: 12px;
+  outline: none;
+  resize: none;
+  font-family: inherit;
+  font-size: 1rem;
+  line-height: 1.6;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  box-shadow: 0 1px 4px 0 rgba(31, 38, 135, 0.06);
+  backdrop-filter: blur(6px) saturate(120%);
+  -webkit-backdrop-filter: blur(6px) saturate(120%);
+}
+
+.notes-editor input[type="text"] {
+  margin-bottom: 1rem;
+  background: rgba(255, 255, 255, 0.22);
+  color: #222;
+  padding: 1rem;
+  border-radius: 12px;
+  outline: none;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  font-size: 1.15rem;
+  font-weight: bold;
+  box-shadow: 0 1px 4px 0 rgba(31, 38, 135, 0.06);
+  backdrop-filter: blur(6px) saturate(120%);
+  -webkit-backdrop-filter: blur(6px) saturate(120%);
+}
+
+.notes-editor-actions {
+  display: flex;
+  gap: 0.75rem;
+  margin-top: 1.5rem;
+  justify-content: flex-end;
+}
+
+.notes-glass-card {
+  background: rgba(255, 255, 255, 0.22);
+  border-radius: 20px;
+  box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.12);
+  backdrop-filter: blur(14px) saturate(170%);
+  -webkit-backdrop-filter: blur(14px) saturate(170%);
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  padding: 2rem 1.5rem;
+}
+
+.notes-glass-btn {
+  background: rgba(255, 255, 255, 0.28);
+  border-radius: 999px;
+  box-shadow: 0 2px 8px 0 rgba(31, 38, 135, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  color: #222;
+  font-weight: 600;
+  padding: 0.75rem 2rem;
+  transition: background 0.2s, box-shadow 0.2s;
+  backdrop-filter: blur(8px) saturate(120%);
+  -webkit-backdrop-filter: blur(8px) saturate(120%);
+}
+.notes-glass-btn:hover {
+  background: rgba(255, 255, 255, 0.38);
+  box-shadow: 0 4px 16px 0 rgba(31, 38, 135, 0.14);
+}
+
+/* Chrome App Specific Styles */
+.browser-window {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.browser-toolbar {
+  padding: 0.75rem;
+  background-color: rgba(31, 41, 55, 0.8);
+  border-bottom: 1px solid rgba(74, 85, 104, 0.5);
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.browser-content {
+  flex-grow: 1;
+  border: 0;
+  background-color: rgba(248, 250, 252, 0.9);
+  /* Slightly transparent light background for browser */
+  color: black;
+  overflow: auto;
+}
+
+.browser-footer {
+  padding: 0.5rem 0.75rem;
+  background-color: rgba(31, 41, 55, 0.8);
+  border-top: 1px solid rgba(74, 85, 104, 0.5);
+  font-size: 0.8rem;
+  color: #9ca3af;
+}
+
+/* Recycle Bin Styles */
+.recycle-bin-content {
+  padding: 1rem;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.recycle-bin-items {
+  flex-grow: 1;
+  overflow-y: auto;
+  border: 1px solid rgba(74, 85, 104, 0.5);
+  border-radius: 0.375rem;
+  padding: 0.5rem;
+  background-color: rgba(31, 41, 55, 0.7);
+  /* Transparent background */
+}
+
+.recycle-bin-item {
+  display: flex;
+  align-items: center;
+  padding: 0.5rem;
+  margin-bottom: 0.25rem;
+  background-color: rgba(55, 65, 81, 0.7);
+  /* Transparent background */
+  border-radius: 0.25rem;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.recycle-bin-item:hover {
+  background-color: rgba(74, 85, 104, 0.7);
+}
+
+.recycle-bin-actions {
+  display: flex;
+  justify-content: space-around;
+  margin-top: 1rem;
+}
+
+/* Desktop icons - Added default absolute positioning */
+#desktop > div {
+  position: absolute;
+  /* Ensure all desktop icons are absolutely positioned */
+  transition: background-color 0.2s, top 0.1s, left 0.1s;
+  /* Smooth hover effect and drag position updates */
+  cursor: pointer;
+  /* Default cursor for icons */
+}
+
+/* Context Menu Styles */
+.context-menu {
+  position: absolute;
+  background-color: rgba(45, 53, 72, 0.95);
+  /* Slightly darker for context menu */
+  border-radius: 0.5rem;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.6);
+  padding: 0.5rem 0;
+  z-index: 200;
+  min-width: 150px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px) saturate(180%);
+  -webkit-backdrop-filter: blur(10px) saturate(180%);
+}
+
+.context-menu-item {
+  padding: 0.6rem 1rem;
+  color: #e2e8f0;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: background-color 0.15s;
+  display: flex;
+  align-items: center;
+}
+
+.context-menu-item:hover {
+  background-color: rgba(99, 179, 237, 0.5);
+  /* Blue hover */
+}
+
+.context-menu-item i {
+  margin-right: 0.75rem;
+  width: 1.2rem;
+  /* Consistent icon spacing */
+  text-align: center;
+}
+
+.context-menu-separator {
+  height: 1px;
+  background-color: rgba(74, 85, 104, 0.5);
+  margin: 0.5rem 0;
+}
+
+/* Glassmorphic Quick Settings Panel */
+#quick-settings-panel {
+  background: rgba(60, 0, 20, 0.32);
+  backdrop-filter: blur(18px) saturate(180%);
+  box-shadow: 0 8px 32px 0 rgba(60, 0, 20, 0.18);
+  position: absolute;
+}
+.modern-music-player {
+  padding: 1.5rem 1.2rem;
+  min-width: 320px;
+  max-width: 410px;
+  display: flex;
+  flex-direction: column;
+  gap: 1.2rem;
+  align-items: center;
+  position: relative;
+  left: -19px;
+  height: 100%;
+}
+
+.qs-toggle-btn {
+  background: rgba(255, 255, 255, 0.35);
+  border: none;
+  border-radius: 0.7rem;
+  padding: 0.3rem 1.1rem;
+  font-weight: 600;
+  color: #222;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.07);
+  cursor: pointer;
+  transition: background 0.18s, color 0.18s;
+}
+.qs-toggle-btn:hover {
+  background: rgba(99, 179, 237, 0.25);
+  color: #2563eb;
+}
+.animate-fade-in {
+  animation: fadeInPanel 0.22s cubic-bezier(0.4, 0, 0.2, 1);
+}
+@keyframes fadeInPanel {
+  from {
+    opacity: 0;
+    transform: translateY(30px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+/* Glassmorphic Login Box */
+.glassmorph-loginbox {
+  background: rgba(255, 255, 255, 0.13);
+  box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+  backdrop-filter: blur(18px) saturate(180%);
+  -webkit-backdrop-filter: blur(18px) saturate(180%);
+  border-radius: 1.2rem;
+  border: 1.5px solid rgba(255, 255, 255, 0.18);
+  color: #222;
+  min-width: 320px;
+  max-width: 95vw;
+  transition: box-shadow 0.2s, background 0.2s;
+}
+.glassmorph-loginbox h2 {
+  color: #222;
+}
+/* Animated entrance for login box */
+.animate-loginbox {
+  animation: loginFadeIn 0.7s cubic-bezier(0.4, 0, 0.2, 1);
+}
+@keyframes loginFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(40px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+/* Modern input and button styles */
+.modern-input {
+  width: 100%;
+  padding: 0.7rem 1.1rem;
+  border-radius: 0.7rem;
+  border: none;
+  background: rgba(255, 255, 255, 0.22);
+  color: #222;
+  font-size: 1rem;
+  margin-bottom: 0.5rem;
+  outline: none;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+  transition: background 0.18s, box-shadow 0.18s;
+}
+.modern-input:focus {
+  background: rgba(99, 179, 237, 0.13);
+  box-shadow: 0 4px 16px rgba(99, 179, 237, 0.13);
+}
+.modern-btn {
+  background: linear-gradient(90deg, #2563eb 0%, #1e40af 100%);
+  color: #fff;
+  border: none;
+  border-radius: 0.7rem;
+  padding: 0.7rem 1.1rem;
+  font-weight: 600;
+  font-size: 1.1rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.07);
+  cursor: pointer;
+  transition: background 0.18s, color 0.18s;
+}
+.modern-btn:hover {
+  background: linear-gradient(90deg, #1e40af 0%, #2563eb 100%);
+  color: #e0e7ef;
+}
+/* Light mode for login */
+.light-mode {
+  background: #f3f4f6 !important;
+  color: #111 !important;
+
+}
+/* Fix: In light mode, login box text should be dark */
+.light-mode .glassmorph-loginbox {
+  background: rgba(255, 255, 255, 0.85);
+  color: #111 !important;
+}
+.light-mode .glassmorph-loginbox * {
+  color: #111 !important;
+}
+.light-mode .modern-input {
+  background: rgba(0, 0, 0, 0.06);
+  color: #222;
+}
+.light-mode .modern-btn {
+  background: linear-gradient(90deg, #fbbf24 0%, #f59e42 100%);
+  color: #222;
+}
+.light-mode .modern-btn:hover {
+  background: linear-gradient(90deg, #f59e42 0%, #fbbf24 100%);
+}
+
+/* Login spinner overlay */
+.login-spinner {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.4);
+  border-radius: 1.2rem;
+  z-index: 20;
+}
+.login-spinner.hidden {
+  display: none;
+}
+.spinner-circle {
+  width: 48px;
+  height: 48px;
+  border: 5px solid #e0e7ef;
+  border-top: 5px solid #2563eb;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  background: transparent;
+}
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+/* White text for login form */
+.glassmorph-loginbox,
+.glassmorph-loginbox * {
+  color: #fff !important;
+}
+.modern-input {
+  color: #fff !important;
+}
+
+/* Wallpaper Picker Context Menu */
+.wallpaper-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  padding: 0.5rem 0.2rem 0.2rem 0.2rem;
+  justify-content: center;
+}
+.wallpaper-thumb {
+  width: 64px;
+  height: 40px;
+  object-fit: cover;
+  border-radius: 0.5rem;
+  cursor: pointer;
+  border: 2px solid transparent;
+  transition: border 0.18s, box-shadow 0.18s;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+.wallpaper-thumb:hover {
+  border: 2px solid #2563eb;
+  box-shadow: 0 4px 16px rgba(37, 99, 235, 0.13);
+}
+.wallpaper-thumb-selected {
+  border: 2px solid #fbbf24 !important;
+  box-shadow: 0 0 0 3px #fbbf2440;
+}

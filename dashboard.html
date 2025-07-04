@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <title>Web OS Desktop (Single File)</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body class="relative bg-cover bg-center text-white min-h-screen overflow-hidden"
+    style="background-image: url('/assets/bg-1.png'); background-size: cover; background-position: center;"
+    oncontextmenu="event.preventDefault(); window.desktopManager.showDesktopContextMenu(event);">
+    <script>
+    // Simple authenticator: if not logged in, redirect to login page
+    // (Assume login sets localStorage.apexLoggedIn = '1')
+    if (!localStorage.getItem('apexLoggedIn')) {
+      window.location.href = 'index.html';
+    }
+    </script>
+    <div id="desktop" class="absolute top-4 left-4 flex flex-col space-y-6 z-10">
+        <div id="desktop_thispc_icon" class="text-center cursor-pointer p-2 hover:bg-white/10 rounded"
+            ondblclick="openApp('This PC')" style="top: 4px; left: 4px;">
+            <i class="fas fa-desktop text-4xl mx-auto"></i>
+            <p class="text-sm mt-1">This PC</p>
+        </div>
+        <div id="desktop_chrome_icon" class="text-center cursor-pointer p-2 hover:bg-white/10 rounded"
+            ondblclick="openApp('Chrome')" style="top: 110px; left: 4px;">
+            <i class="fab fa-chrome text-4xl mx-auto"></i>
+            <p class="text-sm mt-1">Chrome</p>
+        </div>
+        <div id="desktop_notes_icon" class="text-center cursor-pointer p-2 hover:bg-white/10 rounded"
+            ondblclick="openApp('Notes')" style="top: 216px; left: 4px;">
+            <i class="fas fa-sticky-note text-4xl mx-auto"></i>
+            <p class="text-sm mt-1">Notes</p>
+        </div>
+        <div id="desktop_recyclebin_icon" class="text-center cursor-pointer p-2 hover:bg-white/10 rounded"
+            ondblclick="openApp('Recycle Bin')" style="top: 322px; left: 4px;">
+            <i class="fas fa-trash-alt text-4xl mx-auto"></i>
+            <p class="text-sm mt-1">Recycle Bin</p>
+        </div>
+        <div id="desktop_vscode_icon" class="text-center cursor-pointer p-2 hover:bg-white/10 rounded"
+            ondblclick="openApp('VSCode')" style="top: 428px; left: 4px;">
+            <i class="fab fa-vuejs text-4xl mx-auto" style="color:#0078d7;"></i>
+            <p class="text-sm mt-1">VSCode</p>
+        </div>
+        <div id="desktop_terminal_icon" class="text-center cursor-pointer p-2 hover:bg-white/10 rounded"
+            ondblclick="openApp('Terminal')" style="top: 534px; left: 4px;">
+            <i class="fas fa-terminal text-4xl mx-auto"></i>
+            <p class="text-sm mt-1">Terminal</p>
+        </div>
+        <div id="desktop_apexos_icon" class="text-center cursor-pointer p-2 hover:bg-white/10 rounded"
+            ondblclick="openApp('Apex OS')" style="top: 60px; left: 120px;">
+            <i class="fas fa-star text-4xl mx-auto text-yellow-400"></i>
+            <p class="text-sm mt-1">Create This Apex OS</p>
+        </div>
+        <div id="desktop_games_icon" class="text-center cursor-pointer p-2 hover:bg-white/10 rounded"
+            ondblclick="openApp('Poki Games')" style="top: 170px; left: 120px;">
+            <i class="fas fa-gamepad text-4xl mx-auto text-pink-400"></i>
+            <p class="text-sm mt-1">Games</p>
+        </div>
+    </div>
+
+    <div id="startMenu"
+        class="absolute hidden bg-gray-800 rounded-xl p-4 shadow-lg text-white z-10 border border-gray-700 w-fit translate-y-72">
+        <div class="flex items-center justify-between mb-3 border-b border-gray-700 pb-2">
+            <h2 class="text-lg font-semibold flex items-center"><i
+                    class="fas fa-crown text-xl mr-2 text-yellow-400"></i>
+                Apex OS</h2>
+            <span class="text-sm text-gray-300">Welcome, <strong class="text-blue-300">User</strong></span>
+        </div>
+        <input type="text" placeholder="Search apps, files, settings..."
+            class="w-full mb-4 p-2 rounded bg-gray-700 text-white outline-none focus:ring-2 focus:ring-blue-500" />
+
+        <div class="mb-4">
+            <h3 class="text-sm text-gray-400 mb-2 flex items-center"><i class="fas fa-thumbtack mr-2"></i> Pinned
+            </h3>
+            <div class="grid grid-cols-4 gap-2 mt-2">
+                <button class="bg-gray-700 hover:bg-blue-600 rounded p-2 text-center text-xs transition duration-200"
+                    onclick="openApp('This PC')"><i class="fas fa-desktop text-xl block mb-1"></i>This PC</button>
+                <button class="bg-gray-700 hover:bg-blue-600 rounded p-2 text-center text-xs transition duration-200"
+                    onclick="openApp('Chrome')"><i class="fab fa-chrome text-xl block mb-1"></i>Chrome</button>
+                <button class="bg-gray-700 hover:bg-blue-600 rounded p-2 text-center text-xs transition duration-200"
+                    onclick="openApp('Notes')"><i class="fas fa-sticky-note text-xl block mb-1"></i>Notes</button>
+                <button class="bg-gray-700 hover:bg-blue-600 rounded p-2 text-center text-xs transition duration-200"
+                    onclick="openApp('Recycle Bin')"><i class="fas fa-trash-alt text-xl block mb-1"></i>Recycle
+                    Bin</button>
+            </div>
+        </div>
+
+        <div class="mt-4 border-t border-gray-700 pt-3 text-sm flex flex-col space-y-2">
+            <button
+                id="shutdownBtn"
+                class="flex items-center justify-center bg-gray-700 p-2 rounded hover:bg-red-600 transition duration-200"
+                type="button">
+                <i class="fas fa-power-off mr-2"></i> Shutdown
+            </button>
+            <button
+                class="flex items-center justify-center bg-gray-700 p-2 rounded hover:bg-yellow-500 transition duration-200"
+                onclick="alert('Restarting...')">
+                <i class="fas fa-sync-alt mr-2"></i> Restart
+            </button>
+            <button
+                class="flex items-center justify-center bg-gray-700 p-2 rounded hover:bg-blue-500 transition duration-200"
+                onclick="alert('Sleeping...')">
+                <i class="fas fa-moon mr-2"></i> Sleep</button>
+        </div>
+    </div>
+
+    <div id="taskbar"
+        class="fixed bottom-0 left-0 w-full h-14 bg-black/60 backdrop-blur-md flex items-center justify-between px-4 z-[100] border-t border-gray-700 shadow-lg">
+        <div class="flex items-center gap-2 min-w-[120px]" id="taskbar-left">
+            <button id="startBtn"
+                class="p-2 hover:bg-white/10 active:bg-white/20 rounded-full transition duration-200 flex items-center justify-center taskbar-micro-home">
+                <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/windows8/windows8-original.svg" alt="Start"
+                    class="w-8 h-8" style="filter:none;" />
+            </button>
+            <button id="themeToggleDash" title="Theme & Wallpaper"
+                class="hover:bg-white/10 p-2 rounded transition duration-200 ml-2 taskbar-micro-theme">
+                <i class="fas fa-palette"></i>
+            </button>
+        </div>
+        <div id="taskbar-apps" class="flex-1 flex items-center justify-center space-x-2"></div>
+        <div class="flex items-center gap-2 min-w-[220px] justify-end text-gray-300 ">
+            <button class="hover:bg-white/10 p-2 rounded transition duration-200 taskbar-micro" title="Music Player"
+                onclick="toggleQuickSettings(this, 'music')"><i class="fas fa-music"></i></button>
+            <button class="hover:bg-white/10 p-2 rounded transition duration-200 taskbar-micro" title="WiFi"
+                onclick="toggleQuickSettings(this, 'wifi')"><i class="fas fa-wifi"></i></button>
+            <button class="hover:bg-white/10 p-2 rounded transition duration-200 taskbar-micro" title="Bluetooth"
+                onclick="toggleQuickSettings(this, 'bluetooth')"><i class="fa-brands fa-bluetooth-b"></i></button>
+            <button class="hover:bg-white/10 p-2 rounded transition duration-200 taskbar-micro" title="Airplane Mode"
+                onclick="toggleQuickSettings(this, 'airplane')"><i class="fas fa-plane"></i></button>
+            <button class="hover:bg-white/10 p-2 rounded transition duration-200 taskbar-micro" title="Accessibility"
+                onclick="toggleQuickSettings(this, 'accessibility')"><i class="fas fa-wheelchair"></i></button>
+            <button class="hover:bg-white/10 p-2 rounded transition duration-200 taskbar-micro" title="Battery Saver"
+                onclick="toggleQuickSettings(this, 'battery')"><i class="fas fa-battery-half"></i></button>
+            <button class="hover:bg-white/10 p-2 rounded transition duration-200 taskbar-micro" title="More Settings"
+                onclick="toggleQuickSettings(this, 'all')"><i class="fas fa-cog"></i></button>
+            <div id="clock" class="ml-2 px-2 py-1 bg-white/5 rounded text-sm font-mono"></div>
+        </div>
+    </div>
+
+    <!-- Quick Settings Panel (hidden by default) -->
+    <div id="quick-settings-panel"
+        class="hidden fixed bottom-16 right-6 z-[200] w-80 rounded-xl shadow-2xl p-5 flex flex-col gap-4 animate-fade-in">
+        <!-- Content will be injected by JS -->
+    </div>
+
+    <script src="js/barba.min.js"></script>
+    <script src="js/script.js"></script>
+    <script>
+    // Micro-interaction for taskbar icons (press only, no hover)
+    document.querySelectorAll('.taskbar-micro').forEach(btn => {
+      btn.addEventListener('mousedown', () => {
+        btn.style.transform = 'scale(0.88)';
+        btn.style.boxShadow = '0 2px 12px 0 #2563eb44';
+      });
+      btn.addEventListener('mouseup', () => {
+        btn.style.transform = '';
+        btn.style.boxShadow = '';
+      });
+      btn.addEventListener('mouseleave', () => {
+        btn.style.transform = '';
+        btn.style.boxShadow = '';
+      });
+    });
+    // Shutdown animation and redirect using Barba.js (or fallback)
+    document.getElementById('shutdownBtn').addEventListener('click', function() {
+      // Create overlay for shutdown animation
+      let overlay = document.createElement('div');
+      overlay.id = 'shutdown-overlay';
+      overlay.style.position = 'fixed';
+      overlay.style.top = 0;
+      overlay.style.left = 0;
+      overlay.style.width = '100vw';
+      overlay.style.height = '100vh';
+      overlay.style.background = 'radial-gradient(ellipse at center, #181c2f 60%, #000 100%)';
+      overlay.style.display = 'flex';
+      overlay.style.alignItems = 'center';
+      overlay.style.justifyContent = 'center';
+      overlay.style.zIndex = 9999;
+      overlay.style.opacity = 0;
+      overlay.innerHTML = `<div style="text-align:center;"><i class='fas fa-power-off' style='font-size:4rem;color:#fff;'></i><div style='margin-top:1.5rem;font-size:2rem;color:#fff;font-family:Poppins,sans-serif;letter-spacing:2px;'>Shutting Down...</div></div>`;
+      document.body.appendChild(overlay);
+      // Animate overlay in
+      if (window.gsap) {
+        gsap.to(overlay, { duration: 0.5, opacity: 1, ease: 'power2.in' });
+      } else {
+        overlay.style.opacity = 1;
+      }
+      // Animate and then redirect
+      setTimeout(function() {
+        if (window.gsap) {
+          gsap.to(overlay, { duration: 0.7, opacity: 0, scale: 1.1, ease: 'power2.in', onComplete: function() {
+            window.location.href = 'index.html';
+          }});
+        } else {
+          window.location.href = 'index.html';
+        }
+      }, 1200);
+    });
+    // Micro-interaction for desktop icons (press only, no hover)
+    document.querySelectorAll('#desktop > div').forEach(icon => {
+      icon.addEventListener('mousedown', () => {
+        icon.style.transform = 'scale(0.92)';
+        icon.style.boxShadow = '0 2px 12px 0 #2563eb33';
+      });
+      icon.addEventListener('mouseup', () => {
+        icon.style.transform = '';
+        icon.style.boxShadow = '';
+      });
+      icon.addEventListener('mouseleave', () => {
+        icon.style.transform = '';
+        icon.style.boxShadow = '';
+      });
+    });
+    // Micro-interaction for taskbar home and theme icons (press only, no hover)
+    document.querySelectorAll('.taskbar-micro-home, .taskbar-micro-theme').forEach(btn => {
+      btn.addEventListener('mousedown', () => {
+        btn.style.transform = 'scale(0.88)';
+        btn.style.boxShadow = '0 2px 12px 0 #2563eb44';
+      });
+      btn.addEventListener('mouseup', () => {
+        btn.style.transform = '';
+        btn.style.boxShadow = '';
+      });
+      btn.addEventListener('mouseleave', () => {
+        btn.style.transform = '';
+        btn.style.boxShadow = '';
+      });
+    });
+    </script>
+    <script>
+        // Force re-assign openApp to the global window object
+        window.openApp = window.openApp;
+        // Test: show alert on every openApp call
+        if (typeof window.openApp === 'function') {
+            const originalOpenApp = window.openApp;
+            window.openApp = function () {
+                return originalOpenApp.apply(this, arguments);
+            }
+        } else {
+            console.log('window.openApp is still NOT defined at end of HTML!');
+        }
+    </script>
+</body>
+
+</html>

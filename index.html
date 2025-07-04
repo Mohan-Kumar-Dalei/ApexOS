@@ -1,0 +1,71 @@
+<!-- index.html -->
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <title>Login</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css"
+        integrity="sha512-Evv84Mr4kqVGRNSgIGL/F/aIDqQb7xQ2vcrdIwxfjThSH8CSR7PBEakCr51Ck+w+/U6swU2Im1vVX0SVk9ABhg=="
+        crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <script src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
+    <script defer src="js/auth.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body class="bg-gray-900 text-white flex items-center justify-center h-screen transition-colors duration-300"
+    id="loginBody">
+    <button id="themeToggle"
+        class="absolute top-6 right-6 bg-white/10 hover:bg-white/20 text-lg rounded-full px-4 py-2 shadow-lg transition duration-200 z-10"
+        title="Toggle dark/light mode">
+        <i class="fa-solid fa-moon"></i>
+    </button>
+    <form id="loginForm"
+        class="glassmorph-loginbox animate-loginbox flex flex-col items-center gap-4 p-8 rounded-xl shadow-2xl relative">
+        <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/windows8/windows8-original.svg" alt="Logo"
+            class="w-16 h-16 mb-2 opacity-90">
+        <h2 class="text-2xl font-bold mb-2" style="color:#fff;">Welcome</h2>
+        <input id="loginUsername" name="loginUsername" type="text" placeholder="Username"
+            class="modern-input text-white" required />
+        <input id="loginPassword" name="loginPassword" type="password" placeholder="Password"
+            class="modern-input text-white" required />
+        <button type="submit" class="modern-btn w-full">Login</button>
+        <div id="loginSpinner"
+            class="login-spinner hidden absolute inset-0 flex items-center justify-center bg-black/40 rounded-xl z-20">
+            <div class="spinner-circle"></div>
+        </div>
+        <p class="mt-2 text-sm" style="color:#fff;">No account? <a href="register.html"
+                class="text-blue-400 hover:underline">Register</a>
+        </p>
+    </form>
+    <audio id="loginSound" src="/assets/music/startup-sound.mp3" preload="auto"></audio>
+    <script>
+        // Theme toggle logic
+        const themeBtn = document.getElementById('themeToggle');
+        const body = document.getElementById('loginBody');
+        let dark = true;
+        themeBtn.onclick = () => {
+            dark = !dark;
+            if (dark) {
+                body.classList.remove('light-mode');
+                themeBtn.innerHTML = '<i class="fa-solid fa-moon"></i>';
+                body.style.color = '#fff'; // Ensure text is white in dark mode
+            } else {
+                body.classList.add('light-mode');
+                themeBtn.innerHTML = '<i class="fa-solid fa-sun"></i>';
+                body.style.color = '#000'; // Ensure text is black in light mode
+            }
+        };
+        // Play sound and show spinner on login
+        document.getElementById('loginForm').addEventListener('submit', function (e) {
+            document.getElementById('loginSpinner').classList.remove('hidden');
+            setTimeout(() => {
+                document.getElementById('loginSound').play();
+            }, 50);
+        });
+    </script>
+</body>
+
+</html>
