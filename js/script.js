@@ -3213,7 +3213,7 @@ document.addEventListener("DOMContentLoaded", () => {
                     output.scrollTop = output.scrollHeight;
                 }
                 // Ask for username first
-                print("Welcome to WebOS Terminal!");
+                print("Welcome to Apex OS Terminal!");
                 print("Please enter your name to unlock features:");
                 input.placeholder = "Enter your name and press Enter...";
                 input.value = "";
